@@ -1,4 +1,5 @@
-*.sc linguist-language=SuperCollider
-*.scd llinguist-language=SuperCollider
 *.sc linguist-detectable
 *.scd linguist-detectable
+*.sc linguist-language=SuperCollider
+*.scd llinguist-language=SuperCollider
+
