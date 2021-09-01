@@ -1,4 +1,5 @@
-*.sc linguist-language=SuperCollider
-*.scd linguist-language=SuperCollider
+
 *.sc linguist-generated=true
 *.scd linguist-generated=true
+*.sc linguist-language=SuperCollider
+*.scd linguist-language=SuperCollider
