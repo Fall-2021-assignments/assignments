@@ -1,3 +1,3 @@
 *.sc linguist-language=SuperCollider
-*.scd llinguist-language=SuperCollider
-
+*.scd linguist-language=SuperCollider
+*.md linguist-detectable=false
