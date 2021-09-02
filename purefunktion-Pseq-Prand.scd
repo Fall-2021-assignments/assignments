@@ -1,4 +1,4 @@
-```supercollider
+
 (
 Pdef(\glitch,
 	Pbind(*[
@@ -73,4 +73,4 @@ Pdef(\stratos,
 
 Pdef(\stratos).play;
 Pdef(\stratos).stop;
-```
+
