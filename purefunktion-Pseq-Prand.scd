@@ -96,6 +96,6 @@ Pdef(\stratos,
 	])
 )
 )
-Pdef(\stratos).play;
+Pdef(\stratos).play;  
 Pdef(\stratos).stop;
 
