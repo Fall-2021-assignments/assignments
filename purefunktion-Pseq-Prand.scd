@@ -2,18 +2,7 @@
 Pdef(\glitch,
 	Pbind(*[
 		type: \cln,
-/*		snd: Prand([
-			\fmx,
-			\saw,
-			\drm,
-			\kps,
-			\hat,
-			\sin,
-			\bow,
-			\ixa,
-			\dfd,
 
-		], inf),*/
 		snd: Pseq(
 			[
 				\drm,
