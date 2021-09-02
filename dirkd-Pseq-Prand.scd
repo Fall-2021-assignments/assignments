@@ -1,4 +1,4 @@
-/* assignemtn from 19. august
+/* assignment from august 19th
 dirk dullmaier
 
 goals:
