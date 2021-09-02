@@ -1,19 +1,3 @@
-//
-//test again
-///
-
-(
-s.waitForBoot {
-	~clean = SuperClean(2, s); // Two output channels, increase if you want to pan across more channels.
-	~clean.loadSoundFiles; // Hot swap in samples from anywhere!
-	// for example: ~clean.loadSoundFiles("~/Downloads/rnb");
-	s.sync; // Wait for samples to be read.
-	~clean.start([0,0,0]); // First 8 out looks like [0,2,4,6]
-	SuperClean.default = ~clean; // Make the clean key sequenceable inside of SuperCollider.
-	"[ SuperClean up + running ]".postln;
-};
-)
-
 (
 Pdef(\glitch,
 	Pbind(*[
