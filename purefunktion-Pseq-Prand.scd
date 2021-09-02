@@ -1,8 +1,6 @@
 (
 Pdef(\glitch,
-	Pbind(*[
-		type: \cln,
-
+	Pbind(*[type: \cln,
 		snd: Pseq(
 			[
 				\drm,
