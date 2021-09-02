@@ -1,6 +1,6 @@
-/*  
-test again  
-*/  
+/*
+test again
+*/
 (
 s.waitForBoot {
 	~clean = SuperClean(2, s); // Two output channels, increase if you want to pan across more channels.
@@ -96,6 +96,6 @@ Pdef(\stratos,
 	])
 )
 )
-Pdef(\stratos).play;  
+Pdef(\stratos).play;
 Pdef(\stratos).stop;
 
