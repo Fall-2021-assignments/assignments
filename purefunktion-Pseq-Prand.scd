@@ -1,3 +1,48 @@
+```supercollider
+(
+Pdef(\glitch,
+	Pbind(*[
+		type: \cln,
+		snd: Pseq(
+			[
+				\drm,
+				Prand([\fmx,\saw,\kps,\hat,\sin,\bow,\ixa], 87),
+				\drm,
+				Prand([\fmx,\saw,\kps,\sin,\bow,\ixa,\dfd,\drm,], 98),
+		], inf),
+		freq: Prand([50,310], inf),
+		dur: 1 / Pseq([Prand([7,8],1)]++(8!7),inf),
+		//dur: 1 / Pseq([8,8,8,8,8],inf),
+
+		tun: Prand([1,2,3,4,5,6,7], inf), //drm, hat
+		fed: Prand([0,1,2,3, 5,12,40], inf), //drm
+		pew: Prand([1, 20.0], inf), //drm
+
+		bnd: Pwhite(1.5, 1.5), //kps
+		bnt: Prand([1.0, 2, 5, 7, 10.0], inf), //kps
+		bno: Prand([1.0, 2,3,4,5, 10.0], inf), //kps
+		bnc: Prand([1.0, 2,3,4,5, 10.0], inf), //kps
+		iph: Prand([1.0, 2,3,4,5, 5.0], inf),
+		wid: Prand([1.0, 2,3,4,5, 5.0], inf),
+
+		// ixa
+		bes: Prand([0.1, 10, 20, 3, 80], inf),
+		ber: Prand([0.1,2, 3,6, 45, 10.0], inf),
+		abs: Prand([0.1,2,4, 7, 14, 17, 21.0], inf),
+		abr: Prand([0.1, 3, 5, 10.5, 40], inf),
+		ths: Prand([0.1, 5,  10.5, 20], inf),
+		thr: Prand([0.1, 10.5, 20], inf),
+
+		//dfd
+		den: Pwhite(-1.5, 10.5),
+		//den: 1,
+		res: 3,
+		typ: Pwhite(0.2, 6.0),
+		nsl: Pxrand([0.0001, 0.01], inf),
+		sustain: Pxrand([0.01,0.5],inf);
+	])
+).play(quant: 2)
+)
 
 
 (
@@ -28,4 +73,4 @@ Pdef(\stratos,
 
 Pdef(\stratos).play;
 Pdef(\stratos).stop;
-
+```
