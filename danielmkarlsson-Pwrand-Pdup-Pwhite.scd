@@ -1,0 +1,38 @@
+(
+Pdef(0,
+    Pseed(111,
+        Pbind(*[
+            type: \cln,
+            snd: \ixa,
+            dur: 1 * Pwrand((1 .. 9), (9 .. 1).normalizeSum, inf),
+            amp: Pwhite(0.444, 0.777),
+            octave: Pdup(Pwhite(1, 3), Pwhite(3.0, 6.0).round(1/31)),
+            sustain: 10,
+            legato: 10,
+            atk: Pwhite(0.0, 5.0),
+            rel: 10,
+            cav: 2,
+            cai: Pdup(Pwrand([1, 10], [1, 10].normalizeSum, inf), Pwhite(0.0, 1.0)),
+            sas: Pdup(Pwrand([1, 10], [1, 10].normalizeSum, inf), Pwhite(0.0, 2.0)),
+            sar: Pdup(Pwrand([1, 10], [1, 10].normalizeSum, inf), Pwhite(0.0, 0.5)),
+            ths: Pdup(Pwrand([1, 10], [1, 10].normalizeSum, inf), Pwhite(0.0, 2.0)),
+            thr: Pdup(Pwrand([1, 10], [1, 10].normalizeSum, inf), Pwhite(0.0, 0.5)),
+            ocu: Pwhite(0.75, 1.0),
+            sha: 0,
+            shp: Pwhite(0.0, 1.0),
+            sho: Pwhite(0.0, 1.0),
+            shi: Pwhite(0.0, 1.0),
+            lot: Pwhite(0.0, 1.0),
+            hit: Pwhite(0.0, 1.0),
+            bnd: Pwhite(-0.032258064516129, 0.032258064516129),
+            bnt: Pwhite(1/9, 1),
+            bno: Pwhite(1/9, 1),
+            bnc: Pwhite(-4.0, 4.0),
+            dla: 1/8,
+            dlf: 0,
+            dlt: 16,
+            lpf: Pwrand((20, 21 .. 20000), (20, 21 .. 20000).normalizeSum, inf).trace,
+        ])
+    )
+).play
+)
