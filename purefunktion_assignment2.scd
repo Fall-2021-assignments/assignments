@@ -1,4 +1,4 @@
-TempoClock.default.tempo = 120/60;
+TempoClock.default.tempo = 123/60;
 
 // ... and then this in whatever order
 // layers to put on/off
@@ -11,8 +11,11 @@ Pdef(\snare).stop;
 Pdef(\hatsnare).play(quant:1);
 Pdef(\hatsnare).stop;
 
-Pdef(\synten).play;
+Pdef(\synten).play(quant:1);
 Pdef(\synten).stop;
+
+Pdef(\finiteState).play(quant:1);
+Pdef(\finiteState).stop;
 
 /// Run this first
 (
@@ -174,9 +177,9 @@ Pfsm([
 	#[1,0,3,5],
 
 	nil,nil
-]).play(quant:1 )
-);
+])
+).play(quant:1 );
 )
-Pdef(\finiteState).stop;
+
 
 
