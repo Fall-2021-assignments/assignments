@@ -1,0 +1,36 @@
+(
+Pdef(0,
+	Pbind(*[
+		type: \cln,
+		snd: \fmx,
+		dur: Pdup([0.5, 1, 2, 3, 10, 15], Pwhite(0.01, 0.3)).trace,
+		degree: Pwrand([[1, 3, 5, 8], [1, 3, 6, 8], [2, 4, 5, 7]], [2, 2, 1].normalizeSum, inf),
+		legato: Pwrand([1, 2, 3, 4], [8, 6, 4, 2], inf),
+		ctranspose: Pwhite(0.1, 0.5),
+		pan: Pdup(5, Pwhite(0.45, 0.95)),
+		hr1: Pdup(1, Pwhite(0.01, 0.9)),
+		hr2: Pdup(1, Pwhite(0.01, 0.9)),
+		hr3: 1,
+		hr4: 3,
+		fdb: Pdup(3, Pwhite(0.0009, 0.8, inf)),
+		mi2: Pwhite(0.1, 1.0),
+		mi3: Pwhite(0.3, 1.0),
+		mi4: Pwhite(0.2, 1.0),
+		en1: 0.01,
+		en2: 0.01,
+		en3: 0.01,
+		en4: 0.01,
+		cu1: 0.001,
+		cu2: 0.001,
+		cu3: 0.001,
+		cu4: 0.001,
+		atk: 0.02,
+		hld: 1,
+		rel: 3,
+		cav: 0.1,
+		cai: 0.3,
+		cvt: 0.2,
+
+	])
+).play
+)      
