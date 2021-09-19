@@ -47,6 +47,15 @@ Pdef(0,
 				abr: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0, 10))),
 				ths: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0, 10))),
 				thr: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0, 10))),
+				
+				// realized i forgot the decimal points on the Pwhite values for the slope and threshold stuff above...
+				// fun accident and variation!
+				// bes: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0.0, 10.0))),
+				// ber: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0.0, 10.0))),
+				// abs: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0.0, 10.0))),
+				// abr: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0.0, 10.0))),
+				// ths: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0.0, 10.0))),
+				// thr: Pclump(Pkey(\clump), Pdup(Pwhite(1, 7), Pwhite(0.0, 10.0))),
 
 				dla: Pkey(\amp) * 0.8,
 				dlt: Pkey(\dur) * Pkey(\sustain) + Pwhite(0.0, 1.5).round(0.15),
