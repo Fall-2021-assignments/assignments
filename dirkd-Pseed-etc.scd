@@ -21,9 +21,17 @@ but i figured it's a "functional" homework
 ~tape = Buffer.alloc(s, s.sampleRate * 4.0, 2);
 
 //writes into the buffer
+
+SynthDef(\piano, {
+	arg out, freq = 440, gate=1, rel = 0.9, hld = 0;
+    var sig = MdaPiano.ar(freq, gate, release: rel, stereo: 0.3, sustain: hld);
+    DetectSilence.ar(sig, 0.01, doneAction:2);
+    Out.ar(out, sig * 0.1);
+}).store;
+
 SynthDef(\writer, {
 	arg out, in, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, fbk = 0,
-	gate = 1, atk = 0.1, hld = 0.9, rel = 0.6, crv = 2;
+	gate = 1, atk = 0.01, hld = 0.9, rel = 0.6, crv = 2;
 	var sig, rate, phase, sawrate, numFrames, env;
 	//trying out with envelope
 	env = EnvGen.kr(Env.asr(atk, hld, rel, crv), gate, doneAction: 2);
@@ -39,7 +47,7 @@ SynthDef(\writer, {
 //plays from the buffer
 SynthDef(\player, {
 	arg out, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, pan = 1,
-	gate = 1, atk = 0.1, hld = 0.9, rel = 0.6, crv = 2;
+	gate = 1, atk = 0.01, hld = 0.9, rel = 0.6, crv = 2;
 	var sig, rate, phase, sawrate, numFrames, env;
 	env = EnvGen.kr(Env.asr(atk, hld, rel, crv), gate, doneAction: 2);
 	//playback speed.
@@ -61,11 +69,11 @@ SynthDef(\player, {
 (Pdef(0,
 	Pbind(*[
 		type: \cln,
-		snd: \sin,
-		degree: Plprand(2, 14),
+		snd: \piano,
+		degree: Plprand(-2, -14),
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
-		dur: 1 / Pseed(~seedN, Pwrand2([8, 16], [2, 10], inf)),
-		amp: 0.7 + Pwhite(0.05, 0.15),
+		dur: 1 / Pseed(~seedN, Pwrand2([2, 4], [2, 10], inf)),
+		amp: 1.8 + Pwhite(0.05, 0.15),
 		legato: 1.2 + Pexprand(0.1, 0.3),
 		dlt: 2.0,
 		dlf: 0.3,
@@ -146,9 +154,9 @@ SynthDef(\player, {
 		atk: Pwhite(0.0001, 0.01),
 		hld: Pseq([0.1, 0.4, 1, 0.8, 0.4], inf),
 		rel: Pseq([0.5, 0.6, 0.7, 0.2], inf),
-		amp: 0.7 + Pwhite(0.1, 0.2),
+		amp: 0.8 + Pwhite(0.1, 0.2),
 		cai: 0.4,
-		cav: 2.3,
+		cav: 0.9,
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
 	]),
 ).play
@@ -190,7 +198,7 @@ SynthDef(\player, {
 		bufnum: ~tape,
 		fbk: 0.8,
 		bgn: Pwhite(0.2, 0.8),
-		legato: 1,
+		legato: 2,
 	]),
 ).play
 );
@@ -207,3 +215,4 @@ loop: 0,
 interpolation: 4
 );
 */
+Env.asr(0.1, 0.9, 0.6, 5).plot
