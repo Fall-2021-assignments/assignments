@@ -18,31 +18,36 @@ but i figured it's a "functional" homework
 
 ~recordBus = Bus.audio(s, 2);
 
-~tape = Buffer.alloc(s, s.sampleRate * 8.0, 2);
+~tape = Buffer.alloc(s, s.sampleRate * 32.0, 2);
 
 //writes into the buffer
 SynthDef(\writer, {
-	arg out, in, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, pan = 0, fbk = 0;
-	var sig, rate, phase, sawrate, numFrames;
+	arg out, in, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, fbk = 0,
+	gate = 1, atk = 0.1, hld = 0.9, rel = 0.6, crv = 2;
+	var sig, rate, phase, sawrate, numFrames, env;
+	//trying out with envelope
+	env = EnvGen.kr(Env.asr(atk, hld, rel, crv), gate, doneAction: 2);
 	//playback speed.
 	rate = Line.kr(spd, endspd, sustain) * (freq / 60.midicps);
 	//phase =  Sweep.ar(1, rate * BufSampleRate.ir(bufnum)) + (BufFrames.ir(bufnum) * bgn);
 	numFrames = BufFrames.ir(bufnum);
-	sig = RecordBuf.ar(In.ar(in, 2), bufnum, BufFrames.ir(bufnum) * bgn, 1.0, fbk, doneAction:2);
-	Out.ar(out, sig)
+	sig = RecordBuf.ar(In.ar(in, 2), bufnum, BufFrames.ir(bufnum) * bgn, 1.0 * env, fbk, env, doneAction:2);
+	Out.ar(out, 0.0)
 	//what are all those \ir actually for?---
 }, [\ir, \ir, \ir, \ir, \ir, \ir, \ir, \ir]).store;
 
 //plays from the buffer
 SynthDef(\player, {
-	arg out, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, pan = 0;
-	var sig, rate, phase, sawrate, numFrames;
+	arg out, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, pan = 1,
+	gate = 1, atk = 0.1, hld = 0.9, rel = 0.6, crv = 2;
+	var sig, rate, phase, sawrate, numFrames, env;
+	env = EnvGen.kr(Env.asr(atk, hld, rel, crv), gate, doneAction: 2);
 	//playback speed.
 	rate = Line.kr(spd, endspd, sustain) * (freq / 60.midicps);
 	phase =  Sweep.ar(1, rate * BufSampleRate.ir(bufnum)) + (BufFrames.ir(bufnum) * bgn);
 	numFrames = BufFrames.ir(bufnum);
 	sig = PlayBuf.ar(2, bufnum, BufRateScale.ir(bufnum) * rate, startPos: phase, loop: 0.0, doneAction:2);
-	sig = CleanPan.ar(sig, 2, pan);
+	sig = CleanPan.ar(sig * env, 2, pan);
 	Out.ar(out, sig)
 }, [\ir, \ir, \ir, \ir, \ir, \ir, \ir, \ir]).store;
 
@@ -57,10 +62,10 @@ SynthDef(\player, {
 	Pbind(*[
 		type: \cln,
 		snd: \sin,
-		degree: Plprand(2, 6),
+		degree: Plprand(2, 14),
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
 		dur: 1 / Pseed(~seedN, Pwrand2([8, 16], [2, 10], inf)),
-		amp: 0.8,
+		amp: 0.7 + Pwhite(0.05, 0.15),
 		legato: 1.2 + Pexprand(0.1, 0.3),
 		dlt: 2.0,
 		dlf: 0.3,
@@ -84,7 +89,7 @@ SynthDef(\player, {
 		//data in the buffer gets mixed with the input, this is the lynchpin
 		//of creating interesting feedback effects, but also it getting out of
 		//control
-		fbk: 0.4,
+		fbk: 0.8,
 		bgn: Pwhite(0.0, 1.0),
 		legato: 10,
 	]),
@@ -98,6 +103,7 @@ SynthDef(\player, {
 		dur: 2,
 		bufnum: ~tape,
 		bgn: Pwhite(0.0, 1.0),
+		amp: 0.8,
 		legato: 10,
 		hal: 0.3,
 		dlt: 1 / Pwrand2([1, 2, 8], [2, 10, 1], inf),
@@ -122,7 +128,7 @@ SynthDef(\player, {
 		bufnum: ~tape,
 		bgn: Pseq((0.1, 0.2 .. 1.0), inf),
 		legato: Prand([2, 3, 6], inf),
-		bit: Plprand(0.2, 0.4),
+		bit: Plprand(0.7, 1.4),
 		out: ~recordBus,
 	]),
 ).play
@@ -132,11 +138,17 @@ SynthDef(\player, {
 	Pbind(*[
 		type: \cln,
 		snd: \player,
-		dur: 1,
+		dur: Pdup(32, Pwrand([1/8, 1/4, 8], [8, 4, 1], inf)),
 		bufnum: ~tape,
 		bgn: Prand([1, 0.2, 0.4, 0.6, 0.8], inf),
 		legato: 5,
 		degree: Pseq([[-1, -4], [-10, -12], [3, 6], [8, 11]], inf),
+		atk: Pwhite(0.0001, 0.01),
+		hld: Pseq([0.1, 0.4, 1, 0.8, 0.4], inf),
+		rel: Pseq([0.5, 0.6, 0.7, 0.2], inf),
+		amp: 0.7 + Pwhite(0.1, 0.2),
+		cai: 0.4,
+		cav: 2.3,
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
 	]),
 ).play
@@ -151,8 +163,10 @@ SynthDef(\player, {
 	Pbind(*[
 		type: \cln,
 		snd: Pwrand2([\kps, \r], [1, 3], inf),
-		amp: Pwhite(0.2, 0.3),
-		dur: Pseq([4, 6], inf),
+		amp: Pwhite(0.25, 0.4),
+		dur: Pseq([4, 6, 7, 5], inf),
+		ada: Pexprand(0.001,9.3),
+		adr: Pkey(\dur)+(Pexprand(0.07,10.0)),
 		degree: Pwhite(3, 14),
 		legato: 4,
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
@@ -162,6 +176,27 @@ SynthDef(\player, {
 );
 
 );
+
+//FOURTH MOVEMENT
+//second writer for some more madness
+(
+(Pdef(6,
+	Pbind(*[
+		type: \cln,
+		snd: \writer,
+		in: ~recordBus,
+		freq: Phprand(70, 200),
+		dur: Pseed(~seedN, 1 / Pwrand2([4, 8], [4, 8], inf)),
+		bufnum: ~tape,
+		fbk: 0.8,
+		bgn: Pwhite(0.2, 0.8),
+		legato: 1,
+	]),
+).play
+);
+
+);
+
 /*
 --from daniels code, supposedly alternate version to playbuf--
 sound = BufRd.ar(
