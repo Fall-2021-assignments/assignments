@@ -18,7 +18,7 @@ but i figured it's a "functional" homework
 
 ~recordBus = Bus.audio(s, 2);
 
-~tape = Buffer.alloc(s, s.sampleRate * 32.0, 2);
+~tape = Buffer.alloc(s, s.sampleRate * 4.0, 2);
 
 //writes into the buffer
 SynthDef(\writer, {
