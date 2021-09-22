@@ -20,8 +20,8 @@ but i figured it's a "functional" homework
 
 ~tape = Buffer.alloc(s, s.sampleRate * 4.0, 2);
 
-//writes into the buffer
 
+//mda piano from scplugins
 SynthDef(\piano, {
 	arg out, freq = 440, gate=1, rel = 0.9, hld = 0;
     var sig = MdaPiano.ar(freq, gate, release: rel, stereo: 0.3, sustain: hld);
@@ -29,6 +29,7 @@ SynthDef(\piano, {
     Out.ar(out, sig * 0.1);
 }).store;
 
+//writes into a buffer
 SynthDef(\writer, {
 	arg out, in, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, fbk = 0,
 	gate = 1, atk = 0.01, hld = 0.9, rel = 0.6, crv = 2;
@@ -44,7 +45,7 @@ SynthDef(\writer, {
 	//what are all those \ir actually for?---
 }, [\ir, \ir, \ir, \ir, \ir, \ir, \ir, \ir]).store;
 
-//plays from the buffer
+//plays from a buffer
 SynthDef(\player, {
 	arg out, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, pan = 1,
 	gate = 1, atk = 0.01, hld = 0.9, rel = 0.6, crv = 2;
