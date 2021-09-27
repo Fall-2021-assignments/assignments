@@ -14,32 +14,33 @@ but i figured it's a "functional" homework
 //setting up synthdefs, adding them to clean, set seed number
 //create bus and buffer for the read and write synths
 (
-~seedN = 31;
+~seedN = 611;
 
 ~recordBus = Bus.audio(s, 2);
 
 ~tape = Buffer.alloc(s, s.sampleRate * 4.0, 2);
 
+~length = 1.0;
+
 
 //mda piano from scplugins
 SynthDef(\piano, {
 	arg out, freq = 440, gate=1, rel = 0.9, hld = 0;
-    var sig = MdaPiano.ar(freq, gate, release: rel, stereo: 0.3, sustain: hld);
-    DetectSilence.ar(sig, 0.01, doneAction:2);
-    Out.ar(out, sig * 0.1);
+	var sig = MdaPiano.ar(freq, gate, release: rel, stereo: 0.3, sustain: hld);
+	DetectSilence.ar(sig, 0.01, doneAction:2);
+	Out.ar(out, sig * 0.1);
 }).store;
 
 //writes into a buffer
 SynthDef(\writer, {
 	arg out, in, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, fbk = 0,
-	gate = 1, atk = 0.01, hld = 0.9, rel = 0.6, crv = 2;
+	gate = 1, atk = 0.01, hld = 0.9, rel = 0.9, crv = -4.0;
 	var sig, rate, phase, sawrate, numFrames, env;
 	//trying out with envelope
 	env = EnvGen.kr(Env.asr(atk, hld, rel, crv), gate, doneAction: 2);
 	//playback speed.
 	rate = Line.kr(spd, endspd, sustain) * (freq / 60.midicps);
-	//phase =  Sweep.ar(1, rate * BufSampleRate.ir(bufnum)) + (BufFrames.ir(bufnum) * bgn);
-	numFrames = BufFrames.ir(bufnum);
+	numFrames = BufFrames.ir(bufnum) * ~length;
 	sig = RecordBuf.ar(In.ar(in, 2), bufnum, BufFrames.ir(bufnum) * bgn, 1.0 * env, fbk, env, doneAction:2);
 	Out.ar(out, 0.0)
 	//what are all those \ir actually for?---
@@ -48,13 +49,13 @@ SynthDef(\writer, {
 //plays from a buffer
 SynthDef(\player, {
 	arg out, bufnum, sustain = 1, bgn = 0, end = 1, spd = 1, endspd = 1, freq = 440, pan = 1,
-	gate = 1, atk = 0.01, hld = 0.9, rel = 0.6, crv = 2;
+	gate = 1, atk = 0.01, hld = 0.9, rel = 0.9, crv = -4.0;
 	var sig, rate, phase, sawrate, numFrames, env;
 	env = EnvGen.kr(Env.asr(atk, hld, rel, crv), gate, doneAction: 2);
 	//playback speed.
 	rate = Line.kr(spd, endspd, sustain) * (freq / 60.midicps);
 	phase =  Sweep.ar(1, rate * BufSampleRate.ir(bufnum)) + (BufFrames.ir(bufnum) * bgn);
-	numFrames = BufFrames.ir(bufnum);
+	numFrames = BufFrames.ir(bufnum) * ~length;
 	sig = PlayBuf.ar(2, bufnum, BufRateScale.ir(bufnum) * rate, startPos: phase, loop: 0.0, doneAction:2);
 	sig = CleanPan.ar(sig * env, 2, pan);
 	Out.ar(out, sig)
@@ -63,7 +64,7 @@ SynthDef(\player, {
 );
 
 //INITIAL MOVEMENT
-//fill the buffer a bit with random sine bloops
+//fill the buffer a bit with piano stabs
 //also randomly play them back
 (
 
@@ -71,16 +72,16 @@ SynthDef(\player, {
 	Pbind(*[
 		type: \cln,
 		snd: \piano,
-		degree: Plprand(-2, -14),
+		degree: Pdup(80, Pwrand2([Plprand([-2, -5], [-14, -17]), Phprand([-6, -8], [-22, -27])], [20, 4], inf)),
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
 		dur: 1 / Pseed(~seedN, Pwrand2([2, 4], [2, 10], inf)),
-		amp: 1.8 + Pwhite(0.05, 0.15),
+		amp: 0.9 + Pwhite(0.05, 0.15),
 		legato: 1.2 + Pexprand(0.1, 0.3),
-		dlt: 2.0,
+		dlt: 2.0 * Pkey(\amp),
 		dlf: 0.3,
-		dla: 0.4,
+		dla: 0.7,
 		tnh: 0.2,
-		tng: 0.8,
+		tng: 2.8,
 		pan: Pmeanrand(0.0, 1.0),
 		out: ~recordBus,
 	]),
@@ -112,12 +113,14 @@ SynthDef(\player, {
 		dur: 2,
 		bufnum: ~tape,
 		bgn: Pwhite(0.0, 1.0),
-		amp: 0.8,
+		amp: 0.9 + Pmeanrand(0.1, 0.4),
 		legato: 10,
 		hal: 0.3,
 		dlt: 1 / Pwrand2([1, 2, 8], [2, 10, 1], inf),
 		dla: 0.5,
 		dlf: 0.6,
+		tnh: Pwhite(0.1, 0.6),
+		tng: Plprand(0.1, 3.4),
 	]),
 ).play
 );
@@ -133,11 +136,11 @@ SynthDef(\player, {
 	Pbind(*[
 		type: \cln,
 		snd: \player,
-		dur: Pwhite(2, 4),
+		dur: Pwhite(1, 3),
 		bufnum: ~tape,
 		bgn: Pseq((0.1, 0.2 .. 1.0), inf),
 		legato: Prand([2, 3, 6], inf),
-		bit: Plprand(0.7, 1.4),
+		bit: Plprand(1.9, 3.4),
 		out: ~recordBus,
 	]),
 ).play
@@ -152,12 +155,14 @@ SynthDef(\player, {
 		bgn: Prand([1, 0.2, 0.4, 0.6, 0.8], inf),
 		legato: 5,
 		degree: Pseq([[-1, -4], [-10, -12], [3, 6], [8, 11]], inf),
-		atk: Pwhite(0.0001, 0.01),
-		hld: Pseq([0.1, 0.4, 1, 0.8, 0.4], inf),
+		atk: Pwhite(0.001, 0.01),
+		hld: Pseq([0.7, 0.8, 1, 0.8, 0.4], inf),
 		rel: Pseq([0.5, 0.6, 0.7, 0.2], inf),
-		amp: 0.8 + Pwhite(0.1, 0.2),
+		amp: 0.9 + Pwhite(0.1, 0.2),
 		cai: 0.4,
 		cav: 0.9,
+		tnh: Pwhite(0.1, 0.6),
+		tng: Plprand(0.1, 3.4),
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
 	]),
 ).play
@@ -176,18 +181,22 @@ SynthDef(\player, {
 		dur: Pseq([4, 6, 7, 5], inf),
 		ada: Pexprand(0.001,9.3),
 		adr: Pkey(\dur)+(Pexprand(0.07,10.0)),
+		bnd: 0.4,
+		bnt: 0.6,
+		bno: 0.3 + Pwhite(0.01, 0.07),
+		bnc: 0.4,
 		degree: Pwhite(3, 14),
 		legato: 4,
 		Scale: Pseed(~seedN, Pwrand2([Scale.partch_u6(\wcSJ), Scale.partch_o3(\wcHarm)], [10, 1], inf)),
 		out: ~recordBus,
 	]),
-).play
+).fadeTime_(20).play
 );
 
 );
 
 //FOURTH MOVEMENT
-//second writer for some more madness
+//second writer for total madness
 (
 (Pdef(6,
 	Pbind(*[
@@ -195,13 +204,13 @@ SynthDef(\player, {
 		snd: \writer,
 		in: ~recordBus,
 		freq: Phprand(70, 200),
-		dur: Pseed(~seedN, 1 / Pwrand2([4, 8], [4, 8], inf)),
+		dur: Pdup(80, Pwrand2([Pseed(~seedN, 1 / Pwrand2([4, 8], [4, 8], inf)), 10], [2, 8], inf)),
 		bufnum: ~tape,
 		fbk: 0.8,
 		bgn: Pwhite(0.2, 0.8),
-		legato: 2,
+		legato: 6,
 	]),
-).play
+).fadeTime_(20).play
 );
 
 );
@@ -216,4 +225,3 @@ loop: 0,
 interpolation: 4
 );
 */
-Env.asr(0.1, 0.9, 0.6, 5).plot
