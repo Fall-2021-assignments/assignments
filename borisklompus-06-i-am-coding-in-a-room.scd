@@ -1,3 +1,6 @@
+```
+
+
 // Very much in progress.
 // Just beginning to experiment with recursive recording techniques
 
@@ -176,3 +179,7 @@ Pdef(1).map([\num: (~n - 1).value.postln]).play // then run this after completed
 
 
 Thunk.help
+
+
+
+```
