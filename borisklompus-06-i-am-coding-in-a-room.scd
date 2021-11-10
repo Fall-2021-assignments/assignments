@@ -172,7 +172,10 @@ Pdef(1).play(~clock) // on original clock
 Pdef(1).play // on default clock
 Pdef(1).stop
 
-~n = ~record.(Pdef(1), ~clock2, ~folder, ~n, 120); // run, on default clock
+~n = ~record.(Pdef(1), ~clock2, ~folder, ~n, 120); // run, on new clock
+// ~n = ~record.(Pdef(1), ~clock, ~folder, ~n, 120); // run, on original clock
+// ~n = ~record.(Pdef(1), TempoClock.default, ~folder, ~n, 120); // run, on default clock
+// ~n = ~record.(Pdef(1), path: ~folder, file: ~n, dur: 120); // run, on default clock
 
 // Pdef(1).map([\num: (~n - 1).value.postln]).play // then run this after completed to get new file playing (on original clock)
 Pdef(1).map([\num: (~n - 1).value.postln]) // run this after completed to update to next sample, but not play
