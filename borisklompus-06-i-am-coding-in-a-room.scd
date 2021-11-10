@@ -13,6 +13,11 @@
 // To use: make a new folder somewhere on your computer, and drag and drop onto line with ~folder. Evaluate block code block, and then
 // evaluate Pdef(0)'s code block.
 // Run the ~n = ~record line of code, then evaluate Pdef(1), and go from there.
+
+// Note that for Pdef(1), \num doesn't automatically update: 
+// You must evaluate the line: Pdef(1).map([\num: (~n - 1).value.postln]) for the newest recording to swap in.
+// (Re-evaluating the actual Pdef(1, Pbind etc) block of code will also work to update to the newest sample)
+
 // Adjust all code to taste, or drop your own patterns in place of these...
 
 
@@ -20,7 +25,7 @@
 (
 ~initialize = {
 	// folder location for recording -- make a new folder and drop the path here
-	~folder = ; // <<<<<<<<< ADD FOLDER PATH HERE!!!
+	~folder = "/Users/borisklompus/Projects/SuperCollider/Learning/SuperClean/homework/homework progressive exploration/w06/"; // <<<<<<<<< ADD FOLDER PATH HERE!!!
 
 	// do clever things to isolate folder name and save it in a way that \snd will understand (this'll post, so verify)
 	~cFol = ~folder[~folder.findRegexp("/").reverse[1][0] + 1 .. ~folder.findRegexp("/").reverse[0][0] - 1].asSymbol.postln;
@@ -127,7 +132,7 @@ Pdef(1,
 		num: (~n - 1).max(0).value.postln, // play last recorded
 		// spd: Pwrand2([1, 0.5, -0.5, -0.25, 2, -3], [100, 25, 10, 9, 15, 2], inf),
 		bgn: Pseq((0.001, 0.002 .. 1.0), inf),
-		dur: Pseq([0.25, 0.5, 0.125, 0.375], inf) * Pdup(Pwhite(40, 120), Prand((0.1, 0.2 .. 1.0), inf)),
+		dur: Pseq([0.25, 0.5, 0.125, 0.375], inf) * Pdup(Prand([40, 80, 120], inf), Prand((0.1, 0.2 .. 2.0), inf)),
 		atk: Pxrand([0.01, 0.05, 0.1, 0.3], inf),
 		rel: Pwhite(4, 11),
 		crv: Pwhite(2, 7),
@@ -138,17 +143,40 @@ Pdef(1,
 
 		legato: Pseq([1, 7, 2, 9, 0.2], inf),
 		// sustain: Prand([Pkey(\dur), 1.0, 5.0, 0.1], inf),
+
+		spd: Pdup(Pwhite(10, 100).round(10), Pseq([Pseq((1.0, 0.9 .. 0.1)), Pseq((-0.1, -0.2 .. -1.0))], inf)),
+		freq: Pkey(\spd).linexp(-1, 1, 125, 800).trace,
 	])
 )
 )
 
-// test
-Pdef(1).play
+// manually reload folder here
+~clean.lsf(~folder)
+
+
+// make a new clock if you want
+~clock2 = TempoClock(10).permanent_(true)
+
+// update new tempo here
+~clock2.tempo = 15
+
+a = Pseq([10, 1, 5, 25, 125, 75, 0.5], inf).trace
+//doesn't work
+// Pdef(\clocker, Pbind(*[clock: Pfunc { ~clock2.tempo = Pseq([10, 1, 5, 25, 125, 75, 0.5], inf) }.trace, dur: 3])).play
+
+
+
+//
+Pdef(1).play(~clock2) // on new clock
+Pdef(1).play(~clock) // on original clock
+Pdef(1).play // on default clock
 Pdef(1).stop
 
-~n = ~record.(Pdef(1), TempoClock.default, ~folder, ~n, 10); // run, on default clock
+~n = ~record.(Pdef(1), ~clock2, ~folder, ~n, 120); // run, on default clock
 
-Pdef(1).map([\num: (~n - 1).value.postln]).play // then run this after completed to get new file playing
+// Pdef(1).map([\num: (~n - 1).value.postln]).play // then run this after completed to get new file playing (on original clock)
+Pdef(1).map([\num: (~n - 1).value.postln]) // run this after completed to update to next sample, but not play
+
 
 
 
@@ -179,7 +207,6 @@ Pdef(1).map([\num: (~n - 1).value.postln]).play // then run this after completed
 
 
 Thunk.help
-
 
 
 ```
