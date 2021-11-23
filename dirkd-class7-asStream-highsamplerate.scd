@@ -11,10 +11,12 @@ WORK IN WORK
 but time was not on my side--
 
 4 samples, 2x analog vco, 2x shakuhachi recorded at 192khz
+
 https://github.com/dormirj/samples/tree/main/asstream_highsamplerate_11nov
 
 (i wanted to use longer samples, but github wanted them to be smaller
 than 25mb and i havent thought about where to put them)
+
 crossfading slowly at the beginning, somehow with a shared variable for "where"
 in the field between those sources we are,
 
