@@ -15,14 +15,11 @@ https://github.com/dormirj/samples/tree/main/asstream_highsamplerate_11nov
 
 (i wanted to use longer samples, but github wanted them to be smaller
 than 25mb and i havent thought about where to put them)
-
-------------
-
 crossfading slowly at the beginning, somehow with a shared variable for "where"
 in the field between those sources we are,
 
 starts off slowly fading them slowly into each other,
-slowing them down and then accelerating (not yet)
+slowing them down and then accelerating
 
 currently i've not managed to also make ~segments and ~speed into shifting
 pattern objects, because then i get a bunch of errors
@@ -59,12 +56,14 @@ Pdef(0,
 		bgn: Pkey(\segment),
 		dur: Pkey(\single),
 		legato: Pkey(\atk) + Pkey(\rel) * 2,
-		spd: Pkey(\speed) + Pwhite(-0.01, 0.001),
+		// spd: Pkey(\speed) + Pwhite(-0.01, 0.001),
+		spd: Pseg([0.9, 1.0, 0.1, 6.3], [50, 130, 20], \lin, 1),
 		amp: 1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) },
 		// utility: Pfunc { arg event; event.amp.postln },
 		cav: 0.12,
 		dlt: Pkey(\atk),
 		dla: Pseq([0.1, 0.2, 0.3], inf),
+		hpf: 26,
 		aux: 0,
 	]),
 ).play;
