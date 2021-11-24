@@ -36,8 +36,8 @@ starting and stopping of the segments, need to investigate further
 // ~locy = 0.5;
 ~locx = Pseg([0, 1, 0], [50, 150], \sin, 1).asStream;
 ~locy = Pseg([1, 0, 1], [150, 50], \wel, 1).asStream;
-// ~segments = Pseg([5, 20, 1000], [120, 80], \lin, 1).asStream;
-~segments = 10;
+// ~segments = Pseg([2, 20, 1000, 2], [120, 70, 10], \lin, 1).asStream;
+~segments = 100;
 // ~speed = Pseg([0.9, 1.0, 0.1, 2.0], [80, 40, 120], \lin, 1).asStream;
 ~speed = 1;
 
@@ -50,23 +50,21 @@ Pdef(0,
 		lop: 1,
 		speed: Pfunc{~speed},
 		length: Pfunc { arg event; ~clean.buffers[\asstream_highsamplerate_11nov][event.num].numFrames / ~clean.buffers[\asstream_highsamplerate_11nov][event.num].sampleRate } / Pkey(\speed),
-		// length: 1,
 		single: Pkey(\length) / Pkey(\segments),
-		segment: Pseg([0.0, 0.8], Pkey(\length), \lin, inf),
-		atk: 2.4 + Plprand(2.0, 3.0),
+		atk: 1.4 + Plprand(2.0, 3.0),
 		rel: Pkey(\atk) + Plprand(1.0, 3.0),
-		bgn: Pkey(\segment),
+		bgn: Pxshuf((0.01, 0.02 .. 0.99), inf),
 		dur: Pkey(\single),
-		legato: Pkey(\atk) + Pkey(\rel) * 2,
+		legato: Pkey(\dur) * 10,
 		// spd: Pkey(\speed) + Pwhite(-0.01, 0.001),
 		spd: Pfunc{~speed} * Pseg([0.9, 1.0, 0.1, 6.3], [50, 130, 20], \lin, 1),
-		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
+		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
 		pan: Prand([Pfunc{~locx}, Pfunc{~locy}], inf),
 		// utility: Pfunc { arg event; event.amp.postln },
 		cav: 0.12,
 		dlt: Pkey(\atk),
-		dla: Pseq([0.1, 0.2, 0.3], inf),
-		hpf: 26,
+		dla: Pseq([0.2, 0.3, 0.4], inf),
+		hpf: 24,
 		aux: 0,
 	]),
 ).play;
@@ -74,19 +72,19 @@ Pdef(0,
 Pdef(1,
 	Pbindf(Pdef(0), *[
 		num: 1,
-		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 0))) }),
+		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 0))) }),
 ])).play;
 
-Pdef(1,
+Pdef(2,
 	Pbindf(Pdef(0), *[
 		num: 2,
-		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
+		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
 ])).play;
 
-Pdef(1,
+Pdef(3,
 	Pbindf(Pdef(0), *[
 		num: 3,
-		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 1))) }),
+		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 1))) }),
 ])).play;
 
 );
