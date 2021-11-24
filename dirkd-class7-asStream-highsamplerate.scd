@@ -27,8 +27,8 @@ currently i've not managed to also make ~segments and ~speed into shifting
 pattern objects, because then i get a bunch of errors
 "non boolean in test" -- need to find out whats going on there...
 
-also still have some popping when the next segmented events start up, although
-there is a lot of attack and release
+also still have some popping, not sure if its clipping or some unclean
+starting and stopping of the segments, need to investigate further
 */
 (
 //
@@ -53,14 +53,15 @@ Pdef(0,
 		// length: 1,
 		single: Pkey(\length) / Pkey(\segments),
 		segment: Pseg([0.0, 0.8], Pkey(\length), \lin, inf),
-		atk: 2.4 + Plprand(2.0, 7.0),
-		rel: Pkey(\single) + Plprand(2.0, 10.0),
+		atk: 2.4 + Plprand(2.0, 3.0),
+		rel: Pkey(\atk) + Plprand(1.0, 3.0),
 		bgn: Pkey(\segment),
 		dur: Pkey(\single),
 		legato: Pkey(\atk) + Pkey(\rel) * 2,
 		// spd: Pkey(\speed) + Pwhite(-0.01, 0.001),
-		spd: Pseg([0.9, 1.0, 0.1, 6.3], [50, 130, 20], \lin, 1),
-		amp: 1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) },
+		spd: Pfunc{~speed} * Pseg([0.9, 1.0, 0.1, 6.3], [50, 130, 20], \lin, 1),
+		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
+		pan: Prand([Pfunc{~locx}, Pfunc{~locy}], inf),
 		// utility: Pfunc { arg event; event.amp.postln },
 		cav: 0.12,
 		dlt: Pkey(\atk),
@@ -73,19 +74,19 @@ Pdef(0,
 Pdef(1,
 	Pbindf(Pdef(0), *[
 		num: 1,
-		amp: 1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 0))) },
+		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 0))) }),
 ])).play;
 
 Pdef(1,
 	Pbindf(Pdef(0), *[
 		num: 2,
-		amp: 1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 1))) },
+		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
 ])).play;
 
 Pdef(1,
 	Pbindf(Pdef(0), *[
 		num: 3,
-		amp: 1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 1))) },
+		amp: 0.22 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 1))) }),
 ])).play;
 
 );
