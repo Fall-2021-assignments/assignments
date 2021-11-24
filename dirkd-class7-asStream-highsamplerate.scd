@@ -1,4 +1,4 @@
-/* assignment from november 10th
+/* assignment from november 11th
 dirk dullmaier
 
 goals:
@@ -58,7 +58,7 @@ Pdef(0,
 		legato: Pkey(\dur) * 10,
 		// spd: Pkey(\speed) + Pwhite(-0.01, 0.001),
 		spd: Pfunc{~speed} * Pseg([0.9, 1.0, 0.1, 6.3], [50, 130, 20], \lin, 1),
-		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
+		amp: 0.09 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
 		pan: Prand([Pfunc{~locx}, Pfunc{~locy}], inf),
 		// utility: Pfunc { arg event; event.amp.postln },
 		cav: 0.12,
@@ -72,19 +72,29 @@ Pdef(0,
 Pdef(1,
 	Pbindf(Pdef(0), *[
 		num: 1,
-		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 0))) }),
+		amp: 0.09 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 0))) }),
 ])).play;
 
 Pdef(2,
 	Pbindf(Pdef(0), *[
 		num: 2,
-		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
+		amp: 0.09 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
 ])).play;
 
 Pdef(3,
 	Pbindf(Pdef(0), *[
 		num: 3,
-		amp: 0.11 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 1))) }),
+		amp: 0.09 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 1)) + (squared(~locy - 1))) }),
 ])).play;
+
+Pdef(4,
+	Pbindf(Pdef(0), *[
+		num: Prand([0, 1, 2, 3], inf),
+		degree: Pwrand([3, 6, 10, 5], [5, 2, 1, 1], inf),
+		amp: Pseg([0.0, 0.001, 0.1, 0.0], [100, 10, 90], \lin, 1),
+		scale: Scale.farahfaza.tuning_(\sruti),
+		spd: Pfunc{~speed},
+	]),
+).play;
 
 );
