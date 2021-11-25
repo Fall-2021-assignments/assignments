@@ -78,7 +78,7 @@ Pdef(1,
 Pdef(2,
 	Pbindf(Pdef(0), *[
 		num: 2,
-		amp: 0.09 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 0))) }),
+		amp: 0.09 * (1.4142135623731 - Pfunc{ sqrt((squared(~locx - 0)) + (squared(~locy - 1))) }),
 ])).play;
 
 Pdef(3,
