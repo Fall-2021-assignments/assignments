@@ -1,6 +1,10 @@
 /* assignment from december 9th
 dirk dullmaier
 
+WARNING: WARNING: WARNING: WARNING: WARNING: WARNING: WARNING:
+MIGHT BE DANGEROUS TO PLAY IN CURRENT STATE, PROCEED WITH CAUTION
+WARNING: WARNING: WARNING: WARNING: WARNING: WARNING: WARNING:
+
 goals:
 1. after using pdefs to play whats going on in a number of ndefs,
 now we have ndefs playing back and recording stuff that's coming
@@ -11,14 +15,15 @@ i guess this is kind of dangerous territory, because there is some
 feedback thing going on and it could get out of hand, so be cautious
 when trying to play this
 
-WARNING: WARNING:
-MIGHT BE DANGEROUS TO PLAY IN CURRENT STATE, PROCEED WITH CAUTION
-
 i'm still figuring out stuff about execution order, ndefs and clean,
 this code is behaving sometimes differently and i dont know why,
 sometimes it starts off gentle and plays itself up to a little
 distortion, sometimes it already starts off completely bricked
 onto the limiter ---
+
+WARNING: WARNING: WARNING: WARNING: WARNING: WARNING: WARNING:
+MIGHT BE DANGEROUS TO PLAY IN CURRENT STATE, PROCEED WITH CAUTION
+WARNING: WARNING: WARNING: WARNING: WARNING: WARNING: WARNING:
 
 wip
 */
@@ -27,8 +32,8 @@ wip
 (
 /* setup,
 allocate buffers, assign busses */
-~recBuf1 = Buffer.alloc(s, s.sampleRate * 2.0, 2);
-~recBuf2 = Buffer.alloc(s, s.sampleRate * 2.0, 2);
+~recBuf1 = Buffer.alloc(s, s.sampleRate * 16.0, 2);
+~recBuf2 = Buffer.alloc(s, s.sampleRate * 16.0, 2);
 
 ~playerBus1 = Bus.audio(s, 2);
 ~playerBus2 = Bus.audio(s, 2);
@@ -38,6 +43,8 @@ allocate buffers, assign busses */
 Ndef(\player1).fadeTime_(10);
 Ndef(\player2).fadeTime_(20);
 );
+
+s.record;
 
 (
 (
@@ -60,7 +67,7 @@ Pdef(0,
 (
 Pdef(1,
 	Pbind(*[
-		type: \cln,
+		type: Pwrand([\cln, \r], [10, 1], inf),
 		snd: \sin,
 		dur: 1 / 2,
 		wetbalance: Pseg([0, 1], 110, \lin, 1),
@@ -71,15 +78,13 @@ Pdef(1,
 	]),
 ).play
 );
-);
 
-(
 (
 /* start two ndefs that play stuff from the busses,
 record what they play onto the buffers and convolve
 their signal with the buffer from the other ndef */
 Ndef(\player1, {
-	arg rate = 1.0, amp = 0.5, wet = 0.5, dry = 0.5;
+	arg rate = 1.0, amp = 0.4, wet = 0.5, dry = 0.5;
 	var sig, conv, rec, ptr, bufDur, bufFrames;
 
 	bufDur = BufDur.ir(~recBuf1);
@@ -94,15 +99,18 @@ Ndef(\player1, {
 
 	sig = In.ar(~playerBus1, 2);
 
-	conv = [Convolution.ar(sig[0], ~recBuf2.bufnum, 512),
-		Convolution.ar(sig[1], ~recBuf2.bufnum + 1, 512)];
-
-	sig = Mix.ar([sig * dry, conv * wet]);
 	// writing input to buffer
 	~recBuf1.do {
 		arg buf, index;
-		BufWr.ar( sig[index], buf, ptr)
+		BufWr.ar(sig[index], buf, ptr)
 	};
+
+	conv = [Convolution.ar(sig[0], ~recBuf2.bufnum, 8192),
+		Convolution.ar(sig[1], ~recBuf2.bufnum + 1, 8192)];
+
+	// conv = sig;
+
+	sig = Limiter.ar(Mix.ar([sig * dry, conv * wet]), 0.9);
 
 	sig * amp;
 }).play
@@ -110,7 +118,7 @@ Ndef(\player1, {
 
 (
 Ndef(\player2, {
-	arg rate = 1.0, amp = 0.5, wet = 0.5, dry = 0.5;
+	arg rate = 1.0, amp = 0.35, wet = 0.5, dry = 0.5;
 	var sig, conv, rec, ptr, bufDur, bufFrames;
 
 	bufDur = BufDur.ir(~recBuf2);
@@ -125,15 +133,18 @@ Ndef(\player2, {
 
 	sig = In.ar(~playerBus2, 2);
 
-	conv = [Convolution.ar(sig[0], ~recBuf1.bufnum , 512),
-		Convolution.ar(sig[1], ~recBuf1.bufnum + 1, 512)];
-
-	sig = Mix.ar([sig * dry, conv * wet]);
 	// writing input to buffer
 	~recBuf2.do {
 		arg buf, index;
-		BufWr.ar( sig[index], buf, ptr)
+		BufWr.ar(sig[index], buf, ptr)
 	};
+
+	conv = [Convolution.ar(sig[0], ~recBuf1.bufnum , 8192),
+		Convolution.ar(sig[1], ~recBuf1.bufnum + 1, 8192)];
+
+	// conv = sig;
+
+	sig = Limiter.ar(Mix.ar([sig * dry, conv * wet]), 0.9);
 
 	sig * amp;
 }).play
